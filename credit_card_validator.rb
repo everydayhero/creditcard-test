@@ -1,21 +1,19 @@
-#!/usr/bin/ruby
-
-
 
 # Simple categorisation check for Amex card
 def amex_validator(card_number)
-  prefix = card_number[0..2]
+  prefix = card_number[0..1]
   card_number.length == 15 and (prefix == '34' or prefix == '37')
 end
 
 # Simple categorisation check for Discover card
 def discover_validator(card_number)
-  card_number.length == 16 and card_number[0..4] == '6011'
+  card_number.length == 16 and card_number[0..3] == '6011'
 end
 
 # Simple categorisation check for Mastercard
 def mastercard_validator(card_number)
-  card_number.length == 16 and 51 <= Integer(card_number[0..4]) <= 55
+  prefix = Integer(card_number[0..1])
+  card_number.length == 16 and prefix >= 51 and prefix <= 55
 end
 
 # Simple categorisation check for Visa card
@@ -51,4 +49,37 @@ def total_number_string(number_string)
     total += Integer(c)
   }
   total
+end
+
+# Returns a card category label based on the first applicable validator
+# function.
+def categorise(card_number)
+  if amex_validator(card_number)
+    return 'AMEX'
+  elsif discover_validator(card_number)
+    return 'Discover'
+  elsif mastercard_validator(card_number)
+    return 'MasterCard'
+  elsif visa_validator(card_number)
+    return 'VISA'
+  end
+  'Unknown'
+end
+
+# Prints a validation string for a single credit card number
+def put_validation(card_number)
+  category = categorise(card_number)
+  valid = luhn_validator(card_number) ? 'valid' : 'invalid'
+  puts "#{category}: #{card_number}\t(#{valid})"
+end
+
+# Given a multi-line input of credit card numbers (with one card number per
+# line), this function puts a corresponding validation string for each
+def credit_card_validator(input)
+  input.each_line do |line|
+    card_number = line.gsub(/\s/, "")
+    if card_number.length > 0
+      put_validation(card_number)
+    end
+  end
 end
