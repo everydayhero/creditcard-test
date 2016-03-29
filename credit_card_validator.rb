@@ -1,7 +1,7 @@
 # Simple class to encapsulate the validation of a single credit card number
 class CreditCardValidation
   def initialize(card_number)
-    @card_number = card_number
+    @card_number = card_number.gsub(/\s/, '')
   end
 
   def is_valid
@@ -85,4 +85,18 @@ class CreditCardValidation
     end
     'Unknown'
   end
+end
+
+
+# Given a multi-line input of credit card numbers (with one card number per
+# line), this function puts a corresponding validation string for each
+def credit_card_validator(input)
+  validations = []
+  input.each_line do |line|
+    card_number = line.gsub(/\s/, '')
+    if card_number.length > 0
+      validations.push String(CreditCardValidation.new card_number)
+    end
+  end
+  validations
 end
